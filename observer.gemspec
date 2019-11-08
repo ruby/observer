@@ -1,12 +1,14 @@
-lib = File.expand_path("lib", __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "observer/version"
+begin
+  require_relative "lib/observer/version"
+rescue LoadError # Fallback to load version file in ruby core repository
+  require_relative "version"
+end
 
 Gem::Specification.new do |spec|
   spec.name          = "observer"
   spec.version       = Observer::VERSION
-  spec.authors       = ["Hiroshi SHIBATA"]
-  spec.email         = ["hsbt@ruby-lang.org"]
+  spec.authors       = ["Yukihiro Matsumoto"]
+  spec.email         = ["matz@ruby-lang.org"]
 
   spec.summary       = %q{Implementation of the Observer object-oriented design pattern.}
   spec.description   = spec.summary
