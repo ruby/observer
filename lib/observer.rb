@@ -120,7 +120,7 @@
 # The following example illustrates the use of a lambda:
 #
 #   require 'observer'
-# 
+#
 #   class Ticker
 #     include Observable
 #
