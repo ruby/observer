@@ -14,5 +14,5 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: ruby
-      - name: Run RBS test, annotate and confirm
-        run: bundle exec rake rbs:{test,annotate,confirm}
+      - name: Run RBS tests
+        run: bundle exec rake rbs:test

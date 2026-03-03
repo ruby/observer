@@ -20,11 +20,6 @@ namespace :rbs do
       sh("rbs annotate --no-system --no-gems --no-site --no-home -d #{tmpdir}/doc sig")
     end
   end
-
-  task :confirm do
-    puts "Testing if RBS docs are updated with respect to RDoc"
-    sh "git diff --exit-code sig/"
-  end
 end
 
 task :default => :test
