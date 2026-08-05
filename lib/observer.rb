@@ -154,7 +154,7 @@ module Observable
     unless observer.respond_to? func
       raise NoMethodError, "observer does not respond to `#{func}'"
     end
-    observer_peers[observer] = func
+    observers[observer] = func
   end
 
   #
@@ -163,21 +163,21 @@ module Observable
   #
   # +observer+:: An observer of this Observable
   def delete_observer(observer)
-    observer_peers.delete observer
+    observers.delete observer
   end
 
   #
   # Remove all observers associated with this object.
   #
   def delete_observers
-    observer_peers.clear
+    observers.clear
   end
 
   #
   # Return the number of observers associated with this object.
   #
   def count_observers
-    observer_peers.size
+    observers.size
   end
 
   #
@@ -187,7 +187,7 @@ module Observable
   # +state+:: Boolean indicating the changed state of this Observable.
   #
   def changed(state=true)
-    @observer_state = state
+    @notification_pending = state
   end
 
   #
@@ -195,7 +195,7 @@ module Observable
   # #notify_observers call.
   #
   def changed?
-    !! @observer_state
+    !! @notification_pending
   end
 
   #
@@ -207,20 +207,20 @@ module Observable
   #
   # <tt>*arg</tt>:: Any arguments to pass to the observers.
   def notify_observers(*arg)
-    return unless @observer_state
+    return unless @notification_pending
 
-    observer_peers.each do |k, v|
-      k.__send__(v, *arg)
+    observers.each do |peer_or_proc, trigger_method|
+      peer_or_proc.__send__(trigger_method, *arg)
     end
-    @observer_state = false
+    @notification_pending = false
   end
 
   private
 
   #
-  # Lazy-initialized @observer_peer getter.
+  # Lazy-initialized @observers getter.
   #
-  def observer_peers
-    @observer_peers ||= {}
+  def observers
+    @observers ||= {}
   end
 end
