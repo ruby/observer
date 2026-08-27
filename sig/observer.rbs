@@ -211,7 +211,7 @@ module Observable
   # `*arg`
   # :   Any arguments to pass to the observers.
   #
-  def notify_observers: (*untyped arg) -> void
+  def notify_observers: (*untyped arg, **untyped kwargs) -> void
 
   VERSION: String
 end

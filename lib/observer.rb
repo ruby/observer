@@ -225,5 +225,6 @@ module Observable
       @observer_state = false
     end
   end
+  ruby2_keywords(:notify_observers) if respond_to?(:ruby2_keywords, true)
 
 end
