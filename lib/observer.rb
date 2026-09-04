@@ -151,11 +151,10 @@ module Observable
   #          <tt>*arg</tt> is the value passed to #notify_observers by this
   #          Observable
   def add_observer(observer, func=:update)
-    @observer_peers = {} unless defined? @observer_peers
     unless observer.respond_to? func
       raise NoMethodError, "observer does not respond to `#{func}'"
     end
-    @observer_peers[observer] = func
+    observers[observer] = func
   end
 
   #
@@ -164,25 +163,21 @@ module Observable
   #
   # +observer+:: An observer of this Observable
   def delete_observer(observer)
-    @observer_peers.delete observer if defined? @observer_peers
+    observers.delete observer
   end
 
   #
   # Remove all observers associated with this object.
   #
   def delete_observers
-    @observer_peers.clear if defined? @observer_peers
+    observers.clear
   end
 
   #
   # Return the number of observers associated with this object.
   #
   def count_observers
-    if defined? @observer_peers
-      @observer_peers.size
-    else
-      0
-    end
+    observers.size
   end
 
   #
@@ -192,7 +187,7 @@ module Observable
   # +state+:: Boolean indicating the changed state of this Observable.
   #
   def changed(state=true)
-    @observer_state = state
+    @notification_pending = state
   end
 
   #
@@ -200,11 +195,7 @@ module Observable
   # #notify_observers call.
   #
   def changed?
-    if defined? @observer_state and @observer_state
-      true
-    else
-      false
-    end
+    !! @notification_pending
   end
 
   #
@@ -216,14 +207,20 @@ module Observable
   #
   # <tt>*arg</tt>:: Any arguments to pass to the observers.
   def notify_observers(*arg)
-    if defined? @observer_state and @observer_state
-      if defined? @observer_peers
-        @observer_peers.each do |k, v|
-          k.__send__(v, *arg)
-        end
-      end
-      @observer_state = false
+    return unless @notification_pending
+
+    observers.each do |peer_or_proc, trigger_method|
+      peer_or_proc.__send__(trigger_method, *arg)
     end
+    @notification_pending = false
   end
 
+  private
+
+  #
+  # Lazy-initialized @observers getter.
+  #
+  def observers
+    @observers ||= {}
+  end
 end
